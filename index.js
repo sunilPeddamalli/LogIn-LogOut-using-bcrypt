@@ -37,14 +37,22 @@ app.get('/register', (req, res) => {
 
 app.post('/register', async (req, res) => {
     const { username, password } = req.body;
-    const hash = await bcrypt.hash(password, 12)
-    const user = new User({
-        username,
-        password: hash
-    })
+
+    // const hash = await bcrypt.hash(password, 12)
+    // const user = new User({
+    //     username,
+    //     password: hash
+    // })
+    // user.save();
+    // req.session.user_id = user._id
+    // res.redirect('/')
+
+
+    const user = new User({ username, password });
+    // check user modal for pre save mongoose middleware
     user.save();
     req.session.user_id = user._id
-    res.redirect('/')
+    res.redirect('/secret')
 })
 
 app.get('/login', (req, res) => {
@@ -53,15 +61,24 @@ app.get('/login', (req, res) => {
 
 app.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    const user = await User.findOne({ username });
-    if (user) {
-        const validPassword = await bcrypt.compare(password, user.password);
-        if (validPassword) {
-            req.session.user_id = user._id;
-            res.redirect('/secret');
-        } else {
-            res.send('Try again!')
-        }
+
+    // const user = await User.findOne({ username });
+    // if (user) {
+    //     const validPassword = await bcrypt.compare(password, user.password);
+    //     if (validPassword) {
+    //         req.session.user_id = user._id;
+    //         res.redirect('/secret');
+    //     } else {
+    //         res.send('Try again!')
+    //     }
+    // } else {
+    //     res.redirect('/register')
+    // }
+
+    const foundUser = await User.findAndValidate(username, password);
+    if (foundUser) {
+        req.session.user_id = foundUser._id;
+        res.redirect('/secret');
     } else {
         res.redirect('/register')
     }
