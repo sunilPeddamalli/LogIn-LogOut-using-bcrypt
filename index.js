@@ -60,11 +60,17 @@ app.post('/login', async (req, res) => {
     }
 });
 
+app.post('/logout', async (req, res) => {
+    req.session.user_id = null;
+    // req.session.destroy();
+    res.redirect('/login');
+})
+
 app.get('/secret', (req, res) => {
     if (!req.session.user_id) {
         res.redirect('/login')
     }
-    res.send('this is the secret page! for which login was neccessary');
+    res.render('secret');
 })
 
 app.listen(3000, () => {
