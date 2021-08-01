@@ -21,7 +21,7 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.statics.findAndValidate = async function (username, password) {
-    const foundUser = await User.findOne({ username });
+    const foundUser = await this.findOne({ username });
     if (foundUser) {
         const isValid = await bcrypt.compare(password, foundUser.password);
         return isValid ? foundUser : false;
